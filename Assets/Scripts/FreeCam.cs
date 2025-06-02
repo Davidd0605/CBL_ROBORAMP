@@ -14,6 +14,17 @@ using UnityEngine;
 /// </summary>
 public class FreeCam : MonoBehaviour
 {
+    private enum cameraMode
+    {
+        free,
+        locked
+    }
+    private Vector3 Offset = new Vector3(0.0f, 5.0f, 0.0f);
+    public GameObject lockedOnObject;
+
+    [SerializeField]
+    private cameraMode currentCameraMode;
+
     /// <summary>
     ///     Normal speed of camera movement.
     /// </summary>
@@ -49,7 +60,49 @@ public class FreeCam : MonoBehaviour
     /// </summary>
     bool m_Looking;
 
+    void Start()
+    {
+        currentCameraMode = cameraMode.locked;
+    }
     void Update()
+    {
+        switch(currentCameraMode)
+        {
+            case cameraMode.free:
+                freeCam();
+                break;
+            case cameraMode.locked:
+                lockedCam();
+                break;
+        }
+    }
+
+    void OnDisable()
+    {
+        StopLooking();
+    }
+
+    /// <summary>
+    ///     Enable free looking.
+    /// </summary>
+    void StartLooking()
+    {
+        m_Looking = true;
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    /// <summary>
+    ///     Disable free looking.
+    /// </summary>
+    void StopLooking()
+    {
+        m_Looking = false;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    void freeCam()
     {
         var fastMode = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         var movementSpeed = fastMode ? m_FastMovementSpeed : m_MovementSpeed;
@@ -97,28 +150,8 @@ public class FreeCam : MonoBehaviour
         else if (Input.GetKeyUp(KeyCode.Mouse1)) StopLooking();
     }
 
-    void OnDisable()
+    private void lockedCam()
     {
-        StopLooking();
-    }
-
-    /// <summary>
-    ///     Enable free looking.
-    /// </summary>
-    void StartLooking()
-    {
-        m_Looking = true;
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
-    /// <summary>
-    ///     Disable free looking.
-    /// </summary>
-    void StopLooking()
-    {
-        m_Looking = false;
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        transform.position = lockedOnObject.transform.position + Offset;
     }
 }

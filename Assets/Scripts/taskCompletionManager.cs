@@ -15,9 +15,7 @@ public class taskCompletionManager : MonoBehaviour
      *  hasGoal = false when the robot is not path finding.
      *  hasGoal = true when the robot is path finding.
      *  
-     *  @TODO
-     *      Make some way of determining when the robot is just not doing the thing.
-     *      Also remove debugging lol.
+     *  This class can be removed by tweaking the package that gets goal reachable. The topic that package is reading also says stuff abt the goal status (reached)
      * 
      * @author David
      */
@@ -32,15 +30,20 @@ public class taskCompletionManager : MonoBehaviour
 
     private bool hasOdom = false;
     public bool hasGoal = false;
+    public bool isSleeping = false;
 
     public float threshold = 0.4f;
 
+
+    private MissionCooldown missionCooldown;
     void Start()
     {
         ros = ROSConnection.GetOrCreateInstance();
 
         ros.Subscribe<OdometryMsg>(odomTopic, OdomCallback);
         ros.Subscribe<PoseStampedMsg>(goalTopic, GoalCallback);
+
+        missionCooldown = GameObject.FindGameObjectWithTag("logic").GetComponent<MissionCooldown>();
     }
 
     void OdomCallback(OdometryMsg msg)
@@ -70,12 +73,15 @@ public class taskCompletionManager : MonoBehaviour
         if (hasOdom && hasGoal)
         {
             float distance = Vector3.Distance(currentPosition, goalPosition);
+            //TODO INCLUDE IN UI
             //Debug.Log("Distance to goal: " + distance.ToString("F3"));
 
             if (distance < threshold)
             {
+                missionCooldown.startSleeping();
                 hasGoal = false;
             }
         }
+        isSleeping = missionCooldown.isSleeping;
     }
 }

@@ -50,7 +50,9 @@ public class queuingSystem : MonoBehaviour
 
     void Update()
     {
-            if ( (goalQueue.Count > 0 && taskCompletion.hasGoal == false)  || Input.GetKeyDown(KeyCode.G))
+        //TODO ADD IN UI NUMBER OF ENTRIES IN THE CURRENT QUEUE
+        //TODO TAKE OUT THE PRESS G IN THE IF CONDITIONAL REPLACE WITH UI BUTTON PRESSED FOR FORCE SKIP CURRENT TASK
+            if ( (goalQueue.Count > 0 && taskCompletion.hasGoal == false && !taskCompletion.isSleeping)  || Input.GetKeyDown(KeyCode.G))
             {
                 currentGoal = goalQueue.Dequeue();
                 goalPosePublisher.PublishPose(currentGoal.position, currentGoal.rotation);
