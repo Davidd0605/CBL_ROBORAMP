@@ -9,6 +9,7 @@ TagManager:
   - cylinder
   - publisher
   - logic
+  - Robot
   layers:
   - Default
   - TransparentFX
