@@ -35,7 +35,7 @@ public class GoalReachableSubscriber : MonoBehaviour
 
     private void Update()
     {
-        Debug.LogWarning(bufferCan +" "+ bufferCannot);
+        //Debug.LogWarning(bufferCan +" "+ bufferCannot);
         if(bufferCan + bufferCannot > 40)
         {
             if(bufferCan > bufferCannot)

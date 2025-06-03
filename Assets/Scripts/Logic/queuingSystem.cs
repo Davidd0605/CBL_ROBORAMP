@@ -25,6 +25,7 @@ public class queuingSystem : MonoBehaviour
     // Struct here to make it easy to add time stamps for our requests or type (getting on the train of off)
     public struct Pose
     {
+        
         public PointMsg position;
         public QuaternionMsg rotation;
 
@@ -59,7 +60,7 @@ public class queuingSystem : MonoBehaviour
             }
             else
             {
-               Debug.LogWarning($"Cannot send goal: Queue Count = {goalQueue.Count}, hasGoal = {taskCompletion.hasGoal}");
+               //Debug.LogWarning($"Cannot send goal: Queue Count = {goalQueue.Count}, hasGoal = {taskCompletion.hasGoal}");
             }
     }
 
