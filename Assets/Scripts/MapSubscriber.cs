@@ -5,6 +5,7 @@ using RosMessageTypes.Nav;
 
 public class MapSubscriber : MonoBehaviour
 {
+    
     public string mapTopic = "/map";
     public GameObject obstaclePrefab;
     public float obstacleHeight = 0.1f;
@@ -17,15 +18,15 @@ public class MapSubscriber : MonoBehaviour
     private List<GameObject> spawnedObstacles = new List<GameObject>();
 
 
-    //manually set the offset
     private Vector3 ManualOffset = new Vector3(0, 0, 0);
-
     [SerializeField]
     private float x;
 
     [SerializeField]
     private float z;
 
+
+    
     void Start()
     {
         ROSConnection.GetOrCreateInstance().Subscribe<OccupancyGridMsg>(mapTopic, MapCallback);
@@ -78,5 +79,7 @@ public class MapSubscriber : MonoBehaviour
                 }
             }
         }
+
+
     }
 }

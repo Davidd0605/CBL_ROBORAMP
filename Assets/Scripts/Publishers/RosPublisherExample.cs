@@ -36,13 +36,14 @@ public class RosPublisherExample : MonoBehaviour
     void SendRandomGoal()
     {
         float x = Random.Range(-2f, 2f);
-        float y = Random.Range(-2f, 2f);
+        float z = Random.Range(-2f, 2f);
 
         float angle = Random.Range(0f, 360f);
-        Quaternion unityQuat = Quaternion.Euler(0, 0, angle);
+        Quaternion unityQuat = Quaternion.Euler(0, angle, 0);
 
-        PointMsg position = new PointMsg(x, y, 0.0);
-        QuaternionMsg orientation = new QuaternionMsg(unityQuat.x, unityQuat.y, unityQuat.z, unityQuat.w);
+        PointMsg position = CoordinateConverter.UnityToROSPosition(new Vector3(x, 0, z));
+        QuaternionMsg orientation = CoordinateConverter.UnityToROSRotation(unityQuat);
+
         PoseMsg pose = new PoseMsg(position, orientation);
 
         HeaderMsg header = new HeaderMsg();

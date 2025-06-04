@@ -23,7 +23,6 @@ public class taskCompletionManager : MonoBehaviour
 
     //monitored topics guess what they do lol.
     public string odomTopic = "/odom";
-    public string goalTopic = "/goal_pose";
 
     private Vector3 currentPosition;
     private Vector3 goalPosition;
@@ -31,9 +30,10 @@ public class taskCompletionManager : MonoBehaviour
     private bool hasOdom = false;
     public bool hasGoal = false;
     public bool isSleeping = false;
-
+    private bool hasVisual = false;
     public float threshold = 0.4f;
 
+    public GameObject goalMarker;
 
     private MissionCooldown missionCooldown;
     void Start()
@@ -41,7 +41,6 @@ public class taskCompletionManager : MonoBehaviour
         ros = ROSConnection.GetOrCreateInstance();
 
         ros.Subscribe<OdometryMsg>(odomTopic, OdomCallback);
-        ros.Subscribe<PoseStampedMsg>(goalTopic, GoalCallback);
 
         missionCooldown = GameObject.FindGameObjectWithTag("logic").GetComponent<MissionCooldown>();
     }
@@ -49,22 +48,12 @@ public class taskCompletionManager : MonoBehaviour
     void OdomCallback(OdometryMsg msg)
     {
         var pos = msg.pose.pose.position;
-        currentPosition = new Vector3(
-            (float)pos.y * -1f,
-            0f,
-            (float)pos.x
-        );
+        currentPosition = CoordinateConverter.ROSToUnityPosition(pos);
         hasOdom = true;
     }
-
-    void GoalCallback(PoseStampedMsg msg)
+    public void setCurrentGoal(Vector3 goal)
     {
-        var pos = msg.pose.position;
-        goalPosition = new Vector3(
-            (float)pos.y * -1f,
-            0f,
-            (float)pos.x
-        );
+        goalPosition = goal;
         hasGoal = true;
     }
 
@@ -72,14 +61,18 @@ public class taskCompletionManager : MonoBehaviour
     {
         if (hasOdom && hasGoal)
         {
-            float distance = Vector3.Distance(currentPosition, goalPosition);
-            //TODO INCLUDE IN UI
-            //Debug.Log("Distance to goal: " + distance.ToString("F3"));
+            if (!hasVisual)
+            {
+                hasVisual = true;
+                Instantiate(goalMarker, goalPosition, Quaternion.identity);
+            }
 
+            float distance = Vector3.Distance(currentPosition, goalPosition);
             if (distance < threshold)
             {
                 missionCooldown.startSleeping();
                 hasGoal = false;
+                hasVisual = false;
             }
         }
         isSleeping = missionCooldown.isSleeping;

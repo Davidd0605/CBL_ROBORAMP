@@ -16,12 +16,21 @@ public class queuingSystem : MonoBehaviour
      * 
      * 
      */
+
+
+    private enum pathingMode
+    {
+        physicalOnly,
+        virtualPathing
+    };
+    [SerializeField]
+    private pathingMode currentMode = pathingMode.physicalOnly;
+
     ROSConnection ros;
     public string receiveTopic = "/topic_queuing";
 
     private taskCompletionManager taskCompletion;
-    private GoalPosePublisher goalPosePublisher;
-    private GoalReachableSubscriber goalReachable;
+    private GenerateGuide guideGenerator;
 
     // Struct here to make it easy to add time stamps for our requests or type (getting on the train of off)
     public struct Pose
@@ -57,6 +66,7 @@ public class queuingSystem : MonoBehaviour
     private Queue<Pose> goalQueue = new Queue<Pose>();
     private Pose currentGoal;
     private Pose lastInserted;
+    private GoalPosePublisher publisher;
 
     void Start()
     {
@@ -68,24 +78,31 @@ public class queuingSystem : MonoBehaviour
         ros.Subscribe<PoseStampedMsg>(receiveTopic, GoalCallback);
 
         taskCompletion = GetComponent<taskCompletionManager>();
-        goalPosePublisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
-        goalReachable = GameObject.FindGameObjectWithTag("logic").GetComponent<GoalReachableSubscriber>();
+        guideGenerator = GetComponent<GenerateGuide>();
+        publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
     }
 
     void Update()
     {
-        
-            //Debug.Log("IN QUEUE: " + goalQueue.Count);
+        Debug.Log("Number of entries in the queue currently: " + goalQueue.Count);
+        if ((goalQueue.Count > 0 && !taskCompletion.hasGoal && !taskCompletion.isSleeping) || (Input.GetKeyDown(KeyCode.G) && goalQueue.Count > 0))
+        {
+            currentGoal = goalQueue.Dequeue();
+            Vector3 unityGoal = CoordinateConverter.ROSToUnityPosition(currentGoal.position);
 
-            if ( (goalQueue.Count > 0 && !taskCompletion.hasGoal && !taskCompletion.isSleeping)  || Input.GetKeyDown(KeyCode.G))
-            {
-                currentGoal = goalQueue.Dequeue();
-                goalPosePublisher.PublishPose(currentGoal.position, currentGoal.rotation);
+            Debug.LogWarning("Current goal set: " + unityGoal);
+
+            taskCompletion.setCurrentGoal(unityGoal);
+            switch (currentMode) {
+                case pathingMode.physicalOnly:
+                    publisher.PublishPose(currentGoal.position, currentGoal.rotation);
+                    break;
+                case pathingMode.virtualPathing:
+                    GameObject.FindGameObjectWithTag("Searcher").GetComponent<Madness>().SetTarget(unityGoal);
+                    break;
+
             }
-//            else
-//            {
-//               Debug.LogWarning($"Cannot send goal: Queue Count = {goalQueue.Count}, hasGoal = {taskCompletion.hasGoal}");
-//            }
+        }
     }
 
     void GoalCallback(PoseStampedMsg msg)
@@ -95,9 +112,6 @@ public class queuingSystem : MonoBehaviour
         {
             goalQueue.Enqueue(newGoal);
 
-        } else
-        {
-            Debug.LogWarning("TRIED INSERTING DUPLICATE");
         }
         lastInserted = newGoal;
     }
