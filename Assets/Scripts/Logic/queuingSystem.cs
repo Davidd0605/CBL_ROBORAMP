@@ -67,6 +67,7 @@ public class queuingSystem : MonoBehaviour
     private Pose currentGoal;
     private Pose lastInserted;
     private GoalPosePublisher publisher;
+    private Vector3 unityGoal;
 
     void Start()
     {
@@ -84,13 +85,13 @@ public class queuingSystem : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("Number of entries in the queue currently: " + goalQueue.Count);
+        //Debug.Log("Number of entries in the queue currently: " + goalQueue.Count);
         if ((goalQueue.Count > 0 && !taskCompletion.hasGoal && !taskCompletion.isSleeping) || (Input.GetKeyDown(KeyCode.G) && goalQueue.Count > 0))
         {
             currentGoal = goalQueue.Dequeue();
-            Vector3 unityGoal = CoordinateConverter.ROSToUnityPosition(currentGoal.position);
+            unityGoal = CoordinateConverter.ROSToUnityPosition(currentGoal.position);
 
-            Debug.LogWarning("Current goal set: " + unityGoal);
+            //Debug.LogWarning("Current goal set: " + unityGoal);
 
             taskCompletion.setCurrentGoal(unityGoal);
             switch (currentMode) {
@@ -114,5 +115,15 @@ public class queuingSystem : MonoBehaviour
 
         }
         lastInserted = newGoal;
+    }
+
+    public int getGoalQueueCount()
+    {
+        return this.goalQueue.Count;
+    }
+
+    public Vector3 getUnityGoal()
+    {
+        return this.unityGoal;
     }
 }
