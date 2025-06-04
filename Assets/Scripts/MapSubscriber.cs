@@ -1,9 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Robotics.ROSTCPConnector;
-using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 using RosMessageTypes.Nav;
-using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 
 public class MapSubscriber : MonoBehaviour
 {
@@ -18,9 +16,24 @@ public class MapSubscriber : MonoBehaviour
     private Quaternion mapRotation;
     private List<GameObject> spawnedObstacles = new List<GameObject>();
 
+
+    //manually set the offset
+    private Vector3 ManualOffset = new Vector3(0, 0, 0);
+
+    [SerializeField]
+    private float x;
+
+    [SerializeField]
+    private float z;
+
     void Start()
     {
         ROSConnection.GetOrCreateInstance().Subscribe<OccupancyGridMsg>(mapTopic, MapCallback);
+    }
+
+    private void Update()
+    {
+        ManualOffset = new Vector3(x, 0, z);
     }
 
     void MapCallback(OccupancyGridMsg mapMsg)
@@ -58,7 +71,7 @@ public class MapSubscriber : MonoBehaviour
                     Vector3 centeredPos = localPos - centerOffset;
                     Vector3 rotatedPos = mapRotation * centeredPos;
 
-                    GameObject obj = Instantiate(obstaclePrefab, rotatedPos, Quaternion.identity, mapParent);
+                    GameObject obj = Instantiate(obstaclePrefab, rotatedPos + ManualOffset, Quaternion.identity, mapParent);
                     obj.transform.localScale = new Vector3(mapResolution, obstacleHeight, mapResolution);
 
                     spawnedObstacles.Add(obj);

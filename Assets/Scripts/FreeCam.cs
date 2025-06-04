@@ -153,5 +153,6 @@ public class FreeCam : MonoBehaviour
     private void lockedCam()
     {
         transform.position = lockedOnObject.transform.position + Offset;
+        transform.rotation = Quaternion.Euler(90f, 0f, 0f);
     }
 }

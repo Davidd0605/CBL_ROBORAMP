@@ -75,7 +75,7 @@ public class queuingSystem : MonoBehaviour
     void Update()
     {
         
-            Debug.Log("IN QUEUE: " + goalQueue.Count);
+            //Debug.Log("IN QUEUE: " + goalQueue.Count);
 
             if ( (goalQueue.Count > 0 && !taskCompletion.hasGoal && !taskCompletion.isSleeping)  || Input.GetKeyDown(KeyCode.G))
             {
