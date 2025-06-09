@@ -32,6 +32,9 @@ public class queuingSystem : MonoBehaviour
     private taskCompletionManager taskCompletion;
     private GenerateGuide guideGenerator;
 
+    [SerializeField]
+    private ButtonAction nextButton;
+
     // Struct here to make it easy to add time stamps for our requests or type (getting on the train of off)
     public struct Pose
     {
@@ -78,6 +81,7 @@ public class queuingSystem : MonoBehaviour
         ros = ROSConnection.GetOrCreateInstance();
         ros.Subscribe<PoseStampedMsg>(receiveTopic, GoalCallback);
 
+        nextButton = GetComponent<ButtonAction>();
         taskCompletion = GetComponent<taskCompletionManager>();
         guideGenerator = GetComponent<GenerateGuide>();
         publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
@@ -86,9 +90,13 @@ public class queuingSystem : MonoBehaviour
     void Update()
     {
         //Debug.Log("Number of entries in the queue currently: " + goalQueue.Count);
-        if ((goalQueue.Count > 0 && !taskCompletion.hasGoal && !taskCompletion.isSleeping) || (Input.GetKeyDown(KeyCode.G) && goalQueue.Count > 0))
+        if (goalQueue.Count > 0 &&
+            ((!taskCompletion.hasGoal && !taskCompletion.isSleeping)
+            || Input.GetKeyDown(KeyCode.G)
+            || nextButton.pressedNext))
         {
             currentGoal = goalQueue.Dequeue();
+            nextButton.pressedNext = false;
             unityGoal = CoordinateConverter.ROSToUnityPosition(currentGoal.position);
 
             //Debug.LogWarning("Current goal set: " + unityGoal);
