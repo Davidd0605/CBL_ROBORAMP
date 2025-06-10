@@ -8,6 +8,13 @@ public class RosMessageHandler : MonoBehaviour
     public Transform track1End;
     public Transform track2Start;
     public Transform track2End;
+    
+    private RosPublisherExample publisher;
+    
+    void Start()
+    {
+    	publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<RosPublisherExample>();
+    }
 
     public void OnRosMessageReceived(string message)
     {
@@ -44,6 +51,6 @@ public class RosMessageHandler : MonoBehaviour
         Vector3 targetRotation = Vector3.Cross(platformDirection, Vector3.up);
         Debug.Log($"Target robot rotation: {targetRotation}");
 
-        // Call queue method
+        publisher.sendGoal(targetLocation, Quaternion.Euler(targetRotation.x, targetRotation.y, targetRotation.z));
     }
 }
