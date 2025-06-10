@@ -5,8 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.Robotics.ROSTCPConnector",
-        "Unity.Robotics.Nav2Example",
-        "Unity.TextMeshPro"
+        "Unity.Robotics.Nav2Example"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

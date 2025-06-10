@@ -36,10 +36,11 @@ public class RosPublisherExample : MonoBehaviour
     void SendRandomGoal()
     {
         float x = Random.Range(-2f, 2f);
-        float z = Random.Range(-2f, 2f);
+        float z = Random.Range(0, 4f);
 
         float angle = Random.Range(0f, 360f);
         Quaternion unityQuat = Quaternion.Euler(0, angle, 0);
+
 
         PointMsg position = CoordinateConverter.UnityToROSPosition(new Vector3(x, 0, z));
         QuaternionMsg orientation = CoordinateConverter.UnityToROSRotation(unityQuat);
@@ -56,6 +57,28 @@ public class RosPublisherExample : MonoBehaviour
 
         ros.Publish(topicName, goalPose);
 
+    }
+
+
+    //MACIEJ USE THIS ONE MAN
+    //Takes rotation and position in whatever the fuck you want and queues
+    //CSDGBDVFGDBH
+    public void sendGoal(Vector3 pos, Quaternion rot)
+    {
+        PointMsg position = CoordinateConverter.UnityToROSPosition(pos);
+        QuaternionMsg orientation = CoordinateConverter.UnityToROSRotation(rot);
+
+        PoseMsg pose = new PoseMsg(position, orientation);
+
+        HeaderMsg header = new HeaderMsg();
+        header.stamp = new TimeMsg(0, 0);
+        header.frame_id = "map";
+
+        PoseStampedMsg goalPose = new PoseStampedMsg();
+        goalPose.header = header;
+        goalPose.pose = pose;
+
+        ros.Publish(topicName, goalPose);
     }
 
 }

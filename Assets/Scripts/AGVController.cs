@@ -9,7 +9,7 @@ using Codice.Client.BaseCommands.WkStatus.Printers;
 
 namespace RosSharp.Control
 {
-    public enum ControlMode { Keyboard, ROS, flwOdom};
+    public enum ControlMode { Keyboard, ROS, BaseLink};
 
     public class AGVController : MonoBehaviour
     {
@@ -38,6 +38,7 @@ namespace RosSharp.Control
 
         //odom syncing with physical twin
         public string odomTopic = "/odom";
+        private GameObject baseFootprint;
         void Start()
         {
             wA1 = wheel1.GetComponent<ArticulationBody>();
@@ -98,14 +99,19 @@ namespace RosSharp.Control
         }
         void FixedUpdate()
         {
-            if (mode == ControlMode.Keyboard)
+            switch (mode)
             {
-                KeyBoardUpdate();
+                case ControlMode.Keyboard:
+                    KeyBoardUpdate();
+                    break;
+                case ControlMode.ROS:
+                    ROSUpdate();
+                    break;
+                case ControlMode.BaseLink:
+                    Debug.LogWarning("Action not supported yet.");
+                    break;
             }
-            else if (mode == ControlMode.ROS)
-            {
-                ROSUpdate();
-            }     
+         
         }
 
         private void SetParameters(ArticulationBody joint)

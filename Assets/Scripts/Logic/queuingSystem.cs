@@ -16,8 +16,6 @@ public class queuingSystem : MonoBehaviour
      * 
      * 
      */
-
-
     private enum pathingMode
     {
         physicalOnly,
@@ -27,15 +25,12 @@ public class queuingSystem : MonoBehaviour
     private pathingMode currentMode = pathingMode.physicalOnly;
 
     ROSConnection ros;
-    public string receiveTopic = "/topic_queuing";
-
-    private taskCompletionManager taskCompletion;
-    private GenerateGuide guideGenerator;
 
     [SerializeField]
-    private ButtonAction nextButton;
+    private string receiveTopic = "/topic_queuing";
 
-    // Struct here to make it easy to add time stamps for our requests or type (getting on the train of off)
+    
+
     public struct Pose
     {
         public PointMsg position;
@@ -46,7 +41,6 @@ public class queuingSystem : MonoBehaviour
             position = pos;
             rotation = rot;
         }
-
         public bool equals(Pose other)
         {
             if (other.position == null)
@@ -67,11 +61,14 @@ public class queuingSystem : MonoBehaviour
     }
 
     private Queue<Pose> goalQueue = new Queue<Pose>();
+
     private Pose currentGoal;
     private Pose lastInserted;
-    private GoalPosePublisher publisher;
-    private Vector3 unityGoal;
 
+    private taskCompletionManager taskCompletion;
+    private GoalPosePublisher publisher;
+
+    private bool skippedGoal = false;
     void Start()
     {
         //ghetto style
@@ -81,32 +78,34 @@ public class queuingSystem : MonoBehaviour
         ros = ROSConnection.GetOrCreateInstance();
         ros.Subscribe<PoseStampedMsg>(receiveTopic, GoalCallback);
 
-        nextButton = GetComponent<ButtonAction>();
         taskCompletion = GetComponent<taskCompletionManager>();
-        guideGenerator = GetComponent<GenerateGuide>();
         publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
     }
 
     void Update()
     {
-        //Debug.Log("Number of entries in the queue currently: " + goalQueue.Count);
-        if (goalQueue.Count > 0 &&
-            ((!taskCompletion.hasGoal && !taskCompletion.isSleeping)
-            || Input.GetKeyDown(KeyCode.G)
-            || nextButton.pressedNext))
+        if (Input.GetKeyDown(KeyCode.U))
         {
+            skipCurrentGoal();
+        }
+        if ((goalQueue.Count > 0 && taskCompletion.isReady) || skippedGoal)
+        {
+            skippedGoal = false;
             currentGoal = goalQueue.Dequeue();
-            nextButton.pressedNext = false;
-            unityGoal = CoordinateConverter.ROSToUnityPosition(currentGoal.position);
+            Vector3 unityGoal = CoordinateConverter.ROSToUnityPosition(currentGoal.position);
 
-            //Debug.LogWarning("Current goal set: " + unityGoal);
+            Debug.LogWarning("Current goal set: " + unityGoal);
 
+            //Set current goal in task manager
             taskCompletion.setCurrentGoal(unityGoal);
+
+            //Choosed the pathing mode
             switch (currentMode) {
                 case pathingMode.physicalOnly:
                     publisher.PublishPose(currentGoal.position, currentGoal.rotation);
                     break;
                 case pathingMode.virtualPathing:
+                    //TODO: Improve virtual pathing tuesday
                     GameObject.FindGameObjectWithTag("Searcher").GetComponent<Madness>().SetTarget(unityGoal);
                     break;
 
@@ -120,18 +119,38 @@ public class queuingSystem : MonoBehaviour
         if (!newGoal.equals(lastInserted))
         {
             goalQueue.Enqueue(newGoal);
-
         }
         lastInserted = newGoal;
     }
 
-    public int getGoalQueueCount()
+    public int getQueueSize()
     {
-        return this.goalQueue.Count;
+        return goalQueue.Count;
     }
 
-    public Vector3 getUnityGoal()
+    public Vector3 getCurrentGoal()
     {
-        return this.unityGoal;
+        if (currentGoal.position != null)
+        {
+            return CoordinateConverter.ROSToUnityPosition(currentGoal.position);
+        } else
+        {
+            return Vector3.up;
+        }
     }
+
+    public void skipCurrentGoal()
+    {
+        if (skippedGoal == false)
+        {
+            if (goalQueue.Count == 0)
+            {
+                PointMsg currentPosition = CoordinateConverter.UnityToROSPosition(GameObject.FindGameObjectWithTag("Robot").transform.position);
+                QuaternionMsg currentRotation = CoordinateConverter.UnityToROSRotation(GameObject.FindGameObjectWithTag("Robot").transform.rotation);
+                goalQueue.Enqueue(new Pose(currentPosition, currentRotation));
+            }
+            skippedGoal = true;
+        }
+    }
+
 }
