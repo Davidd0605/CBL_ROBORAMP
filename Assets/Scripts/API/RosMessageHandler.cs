@@ -9,11 +9,11 @@ public class RosMessageHandler : MonoBehaviour
     public Transform track2Start;
     public Transform track2End;
     
-    private RosPublisherExample publisher;
+    public RosPublisherExample publisher;
     
     void Start()
     {
-    	publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<RosPublisherExample>();
+    	
     }
 
     public void OnRosMessageReceived(string message)

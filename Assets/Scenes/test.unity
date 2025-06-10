@@ -38,6 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -978,6 +979,7 @@ MonoBehaviour:
   track1End: {fileID: 967220511}
   track2Start: {fileID: 353823126}
   track2End: {fileID: 1002409871}
+  publisher: {fileID: 2016692133}
 --- !u!1 &848726874
 GameObject:
   m_ObjectHideFlags: 0
