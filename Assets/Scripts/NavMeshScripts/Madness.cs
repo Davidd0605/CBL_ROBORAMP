@@ -39,8 +39,7 @@ public class Madness : MonoBehaviour
         {
             transform.position = GameObject.FindGameObjectWithTag("Robot").transform.position;
         }
-
-        if (hasGoal)
+        else
         {
             PublishPosition();
             agent.isStopped = !isTouchingRobot;
