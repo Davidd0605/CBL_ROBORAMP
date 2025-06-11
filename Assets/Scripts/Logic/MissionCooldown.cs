@@ -22,7 +22,7 @@ public class MissionCooldown : MonoBehaviour
     }
     private IEnumerator SleepCooldownRoutine()
     {
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(sleepingCooldown);
         isSleeping = false;
         //TODO IN UI
         Debug.Log("COOLDOWN ENDED");
