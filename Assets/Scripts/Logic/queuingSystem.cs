@@ -12,10 +12,10 @@ using RosMessageTypes.Geometry;
  */
 public class queuingSystem : MonoBehaviour
 {
-    private enum pathingMode
+    private enum PathingMode
     {
-        physicalOnly,
-        virtualPathing
+        PhysicalOnly,
+        VirtualPathing
     };
     
     public struct Pose
@@ -29,7 +29,7 @@ public class queuingSystem : MonoBehaviour
             rotation = rot;
         }
 
-        public bool equals(Pose other)
+        public bool Equals(Pose other)
         {
             if (position == null || rotation == null)
             {
@@ -40,7 +40,7 @@ public class queuingSystem : MonoBehaviour
         }
     }
 
-    [SerializeField] private pathingMode currentMode = pathingMode.physicalOnly;
+    [SerializeField] private PathingMode currentMode = PathingMode.PhysicalOnly;
 
     ROSConnection ros;
 
@@ -56,7 +56,7 @@ public class queuingSystem : MonoBehaviour
 
     private bool skippedGoal = false;
 
-    void Start()
+    private void Start()
     {
         lastInserted.position = null;
         lastInserted.rotation = null;
@@ -68,7 +68,7 @@ public class queuingSystem : MonoBehaviour
         publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.U))
         {
@@ -87,10 +87,10 @@ public class queuingSystem : MonoBehaviour
 
             switch (currentMode)
             {
-                case pathingMode.physicalOnly:
+                case PathingMode.PhysicalOnly:
                     publisher.PublishPose(currentGoal.position, currentGoal.rotation);
                     break;
-                case pathingMode.virtualPathing:
+                case PathingMode.VirtualPathing:
                     //TODO: Improve virtual pathing tuesday
                     GameObject.FindGameObjectWithTag("Searcher").GetComponent<Madness>().SetTarget(unityGoal);
                     break;
@@ -98,10 +98,10 @@ public class queuingSystem : MonoBehaviour
         }
     }
 
-    void GoalCallback(PoseStampedMsg msg)
+    private void GoalCallback(PoseStampedMsg msg)
     {
         Pose newGoal = new Pose(msg.pose.position, msg.pose.orientation);
-        if (!newGoal.equals(lastInserted))
+        if (!newGoal.Equals(lastInserted))
         {
             goalQueue.Enqueue(newGoal);
         }
