@@ -50,17 +50,14 @@ public class taskCompletionManager : MonoBehaviour
         {
             Destroy(currentMarker);
         }
+        
+        currentMarker = Instantiate(goalMarker, goalPosition, Quaternion.identity);
     }
 
     void FixedUpdate()
     {
         if (hasGoal)
         {
-            if (currentMarker == null)
-            {
-                currentMarker = Instantiate(goalMarker, goalPosition, Quaternion.identity);
-            }
-
             distance = Vector3.Distance(Robot.transform.position, goalPosition);
 
             Debug.Log("Current remaining distance: " + distance);
