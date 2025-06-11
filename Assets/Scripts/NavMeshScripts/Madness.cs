@@ -2,7 +2,12 @@ using RosMessageTypes.Geometry;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine.AI;
 using UnityEngine;
-using Unity;
+
+/**
+* To be refactor if i had not done this already.
+* This is the 5th solution I come up with for this today.
+* My mental state has been degrading at a rapid pace.
+*/
 public class Madness : MonoBehaviour
 {
     private NavMeshAgent agent;
@@ -18,13 +23,8 @@ public class Madness : MonoBehaviour
     {
         get { return agent; }
     }
-
-    /**
-     * To be refactor if i had not done this already.
-     * This is the 5th solution I come up with for this today.
-     * My mental state has been degrading at a rapid pace.
-     */
-    void Start()
+    
+    private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         agent.isStopped = true;
@@ -33,14 +33,13 @@ public class Madness : MonoBehaviour
         publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (!hasGoal)
         {
             transform.position = GameObject.FindGameObjectWithTag("Robot").transform.position;
         }
-
-        if (hasGoal)
+        else
         {
             PublishPosition();
             agent.isStopped = !isTouchingRobot;
