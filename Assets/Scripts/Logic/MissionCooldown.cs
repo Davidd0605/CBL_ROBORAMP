@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MissionCooldown : MonoBehaviour
@@ -22,7 +21,7 @@ public class MissionCooldown : MonoBehaviour
     }
     private IEnumerator SleepCooldownRoutine()
     {
-        yield return new WaitForSeconds(10);
+        yield return new WaitForSeconds(sleepingCooldown);
         isSleeping = false;
         //TODO IN UI
         Debug.Log("COOLDOWN ENDED");

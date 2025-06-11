@@ -1,36 +1,23 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Geometry;
-using RosMessageTypes.BuiltinInterfaces;
-using RosMessageTypes.Std;
+
+/**
+ *
+ * Reads coordinates + rotation from specified topic.
+ * These are stored in a queue, prioritized by the time rev.
+ * I want to die lowkey hehehehaw.
+ *
+ */
 public class queuingSystem : MonoBehaviour
 {
-    /**
-     * 
-     * Reads coordinates + rotation from specified topic.
-     * These are stored in a queue, prioritized by the time rev.
-     * I want to die lowkey hehehehaw.
-     * Currently has a somewhat harmless bug, it enqueues requests 2 times however they get processed one after the other.
-     * 
-     * 
-     */
-    private enum pathingMode
+    private enum PathingMode
     {
-        physicalOnly,
-        virtualPathing
+        PhysicalOnly,
+        VirtualPathing
     };
-    [SerializeField]
-    private pathingMode currentMode = pathingMode.physicalOnly;
-
-    ROSConnection ros;
-
-    [SerializeField]
-    private string receiveTopic = "/topic_queuing";
-
     
-
     public struct Pose
     {
         public PointMsg position;
@@ -41,25 +28,24 @@ public class queuingSystem : MonoBehaviour
             position = pos;
             rotation = rot;
         }
-        public bool equals(Pose other)
+
+        public bool Equals(Pose other)
         {
-            if (other.position == null)
+            if (position == null || rotation == null)
             {
                 return false;
             }
 
-            if (other.position.x == this.position.x &&
-                other.position.y == this.position.y &&
-                other.position.z == this.position.z &&
-                other.rotation.x == this.rotation.x &&
-                other.rotation.y == this.rotation.y &&
-                other.rotation.z == this.rotation.z &&
-                other.rotation.w == this.rotation.w)
-                return true;
-            return false;
+            return position.Equals(other.position) && rotation.Equals(other.rotation);
         }
     }
 
+    [SerializeField] private PathingMode currentMode = PathingMode.PhysicalOnly;
+
+    ROSConnection ros;
+
+    [SerializeField] private string receiveTopic = "/topic_queuing";
+    
     private Queue<Pose> goalQueue = new Queue<Pose>();
 
     private Pose currentGoal;
@@ -69,9 +55,9 @@ public class queuingSystem : MonoBehaviour
     private GoalPosePublisher publisher;
 
     private bool skippedGoal = false;
-    void Start()
+
+    private void Start()
     {
-        //ghetto style
         lastInserted.position = null;
         lastInserted.rotation = null;
 
@@ -82,12 +68,13 @@ public class queuingSystem : MonoBehaviour
         publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.U))
         {
             skipCurrentGoal();
         }
+
         if ((goalQueue.Count > 0 && taskCompletion.isReady) || skippedGoal)
         {
             skippedGoal = false;
@@ -96,30 +83,29 @@ public class queuingSystem : MonoBehaviour
 
             Debug.LogWarning("Current goal set: " + unityGoal);
 
-            //Set current goal in task manager
             taskCompletion.setCurrentGoal(unityGoal);
 
-            //Choosed the pathing mode
-            switch (currentMode) {
-                case pathingMode.physicalOnly:
+            switch (currentMode)
+            {
+                case PathingMode.PhysicalOnly:
                     publisher.PublishPose(currentGoal.position, currentGoal.rotation);
                     break;
-                case pathingMode.virtualPathing:
+                case PathingMode.VirtualPathing:
                     //TODO: Improve virtual pathing tuesday
                     GameObject.FindGameObjectWithTag("Searcher").GetComponent<Madness>().SetTarget(unityGoal);
                     break;
-
             }
         }
     }
 
-    void GoalCallback(PoseStampedMsg msg)
+    private void GoalCallback(PoseStampedMsg msg)
     {
         Pose newGoal = new Pose(msg.pose.position, msg.pose.orientation);
-        if (!newGoal.equals(lastInserted))
+        if (!newGoal.Equals(lastInserted))
         {
             goalQueue.Enqueue(newGoal);
         }
+
         lastInserted = newGoal;
     }
 
@@ -133,7 +119,8 @@ public class queuingSystem : MonoBehaviour
         if (currentGoal.position != null)
         {
             return CoordinateConverter.ROSToUnityPosition(currentGoal.position);
-        } else
+        }
+        else
         {
             return Vector3.up;
         }
@@ -145,12 +132,16 @@ public class queuingSystem : MonoBehaviour
         {
             if (goalQueue.Count == 0)
             {
-                PointMsg currentPosition = CoordinateConverter.UnityToROSPosition(GameObject.FindGameObjectWithTag("Robot").transform.position);
-                QuaternionMsg currentRotation = CoordinateConverter.UnityToROSRotation(GameObject.FindGameObjectWithTag("Robot").transform.rotation);
+                PointMsg currentPosition =
+                    CoordinateConverter.UnityToROSPosition(GameObject.FindGameObjectWithTag("Robot").transform
+                        .position);
+                QuaternionMsg currentRotation =
+                    CoordinateConverter.UnityToROSRotation(GameObject.FindGameObjectWithTag("Robot").transform
+                        .rotation);
                 goalQueue.Enqueue(new Pose(currentPosition, currentRotation));
             }
+
             skippedGoal = true;
         }
     }
-
 }

@@ -14,6 +14,11 @@ public class Madness : MonoBehaviour
 
     public Material mat;
 
+    public NavMeshAgent AgentInstance
+    {
+        get { return agent; }
+    }
+
     /**
      * To be refactor if i had not done this already.
      * This is the 5th solution I come up with for this today.

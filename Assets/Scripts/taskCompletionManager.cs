@@ -1,59 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
-using Unity.Robotics.ROSTCPConnector.MessageGeneration;
-using RosMessageTypes.Nav;
-using RosMessageTypes.Geometry;
 
+/**
+ *
+ * The purpose of this class is to get status on the current mission of the robot.
+ *  hasGoal = false when the robot is not path finding.
+ *  hasGoal = true when the robot is path finding.
+ *
+ *  This class can be removed by tweaking the package that gets goal reachable. The topic that package is reading also says stuff abt the goal status (reached)
+ *
+ * @author David
+ */
 public class taskCompletionManager : MonoBehaviour
-{
+{ 
+    private enum MissionStatus
+    {
+        WaitingForGoal,
+        NavigationToGoal,
+        FinishedMission
+    }
 
-    /**
-     * 
-     * The purpose of this class is to get status on the current mission of the robot.
-     *  hasGoal = false when the robot is not path finding.
-     *  hasGoal = true when the robot is path finding.
-     *  
-     *  This class can be removed by tweaking the package that gets goal reachable. The topic that package is reading also says stuff abt the goal status (reached)
-     * 
-     * @author David
-     */
     ROSConnection ros;
-
-    //monitored topics guess what they do lol.
-
     private Vector3 goalPosition;
-
     private GameObject Robot;
-
     private bool hasGoal = false;
     private bool isSleeping = false;
     public bool isReady = false;
-
     public float threshold = 0.4f;
-
     public GameObject goalMarker;
     private GameObject currentMarker;
-
     private MissionCooldown missionCooldown;
-
     private float distance = -1.0f;
-    private enum missionStatus
-    {
-        waiting_for_goal,
-        navigation_to_goal,
-        finished_mission
-    }
-
-    private missionStatus currentStatus;
-
+    private MissionStatus currentStatus;
+    
     void Start()
     {
         Robot = GameObject.FindGameObjectWithTag("Robot");
         missionCooldown = GameObject.FindGameObjectWithTag("logic").GetComponent<MissionCooldown>();
 
-        currentStatus = missionStatus.waiting_for_goal;
+        currentStatus = MissionStatus.WaitingForGoal;
     }
 
     public void setCurrentGoal(Vector3 goal)
@@ -65,16 +50,14 @@ public class taskCompletionManager : MonoBehaviour
         {
             Destroy(currentMarker);
         }
+        
+        currentMarker = Instantiate(goalMarker, goalPosition, Quaternion.identity);
     }
 
     void FixedUpdate()
     {
         if (hasGoal)
         {
-            if (currentMarker == null)
-            {
-                currentMarker = Instantiate(goalMarker, goalPosition, Quaternion.identity);
-            }
             distance = Vector3.Distance(Robot.transform.position, goalPosition);
 
             Debug.Log("Current remaining distance: " + distance);
@@ -86,6 +69,7 @@ public class taskCompletionManager : MonoBehaviour
                 Destroy(currentMarker, 2);
             }
         }
+
         isSleeping = missionCooldown.isSleeping;
         isReady = !hasGoal && !isSleeping;
     }
@@ -94,17 +78,17 @@ public class taskCompletionManager : MonoBehaviour
     {
         if (hasGoal)
         {
-            currentStatus = missionStatus.navigation_to_goal;
+            currentStatus = MissionStatus.NavigationToGoal;
         }
 
         if (!hasGoal && !isReady)
         {
-            currentStatus = missionStatus.finished_mission;
+            currentStatus = MissionStatus.FinishedMission;
         }
 
         if (isReady)
         {
-            currentStatus = missionStatus.waiting_for_goal;
+            currentStatus = MissionStatus.WaitingForGoal;
         }
     }
 
