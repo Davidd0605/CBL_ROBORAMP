@@ -21,7 +21,7 @@ public class QueuingDIsplay : MonoBehaviour
     {
         queuingText.text = "Queue size: " + queSys.getQueueSize().ToString()
             + "\nCurrent goal: \n" + queSys.getCurrentGoal().ToString()
-            + "\nDistance to goal:\n" + taskManager.getDistance()
+            + "\nDistance:" + taskManager.getDistance()
             + "\nStatus: " + taskManager.getStatus();
     }
 }
