@@ -41,22 +41,15 @@ public class queuingSystem : MonoBehaviour
             position = pos;
             rotation = rot;
         }
+        
         public bool equals(Pose other)
         {
-            if (other.position == null)
+            if (position == null || rotation == null)
             {
                 return false;
             }
-
-            if (other.position.x == this.position.x &&
-                other.position.y == this.position.y &&
-                other.position.z == this.position.z &&
-                other.rotation.x == this.rotation.x &&
-                other.rotation.y == this.rotation.y &&
-                other.rotation.z == this.rotation.z &&
-                other.rotation.w == this.rotation.w)
-                return true;
-            return false;
+            
+            return position.Equals(other.position) && rotation.Equals(other.rotation);
         }
     }
 
