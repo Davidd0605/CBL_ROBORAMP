@@ -2412,7 +2412,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1246816364}
   m_HandleRect: {fileID: 1246816363}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -2739,10 +2739,7 @@ MonoBehaviour:
   mapTopic: /map
   obstaclePrefab: {fileID: 8659557068479311579, guid: 653ceda4cf3e8a24f944973fcc2f0750, type: 3}
   obstacleHeight: 0.56
-  deg: 270
-  xOffset: -0.5
-  zOffset: 1.95
-  currentMode: 0
+  mapTransform: {fileID: 1830581899}
 --- !u!114 &1830581901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2974,6 +2971,10 @@ PrefabInstance:
     - target: {fileID: 1305978815096875101, guid: 7e8ecfd17cd58c247916864b74797f3f, type: 3}
       propertyPath: m_ID
       value: 1305978815096875101-1890099915
+      objectReference: {fileID: 0}
+    - target: {fileID: 1305978815096875101, guid: 7e8ecfd17cd58c247916864b74797f3f, type: 3}
+      propertyPath: m_Topic
+      value: /local_costmap/costmap
       objectReference: {fileID: 0}
     - target: {fileID: 1341703867306652306, guid: 7e8ecfd17cd58c247916864b74797f3f, type: 3}
       propertyPath: m_ID

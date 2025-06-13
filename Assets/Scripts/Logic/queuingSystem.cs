@@ -5,9 +5,10 @@ using RosMessageTypes.Geometry;
 
 /**
  *
- * Reads coordinates + rotation from specified topic.
- * These are stored in a queue, prioritized by the time rev.
- * I want to die lowkey hehehehaw.
+ * Queuing system for the ramp robot.
+ * Queued positions/rotations are passed through a certain topics.
+ * They are stored in a queue structure and dequeued when the robot is available.
+ * The robot can be set on either physical only or physical + virtual obstacles.
  *
  */
 public class queuingSystem : MonoBehaviour
@@ -17,28 +18,6 @@ public class queuingSystem : MonoBehaviour
         PhysicalOnly,
         VirtualPathing
     };
-    
-    public struct Pose
-    {
-        public PointMsg position;
-        public QuaternionMsg rotation;
-
-        public Pose(PointMsg pos, QuaternionMsg rot)
-        {
-            position = pos;
-            rotation = rot;
-        }
-
-        public bool Equals(Pose other)
-        {
-            if (position == null || rotation == null)
-            {
-                return false;
-            }
-
-            return position.Equals(other.position) && rotation.Equals(other.rotation);
-        }
-    }
 
     [SerializeField] private PathingMode currentMode = PathingMode.PhysicalOnly;
 
@@ -79,10 +58,8 @@ public class queuingSystem : MonoBehaviour
         {
             skippedGoal = false;
             currentGoal = goalQueue.Dequeue();
+
             Vector3 unityGoal = CoordinateConverter.ROSToUnityPosition(currentGoal.position);
-
-            Debug.LogWarning("Current goal set: " + unityGoal);
-
             taskCompletion.setCurrentGoal(unityGoal);
 
             switch (currentMode)
