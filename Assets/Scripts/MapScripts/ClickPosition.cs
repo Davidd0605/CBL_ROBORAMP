@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ClickPosition : MonoBehaviour
 {
+    public RosPublisherExample publisher;
     void Update()
     {
         
@@ -16,6 +17,7 @@ public class ClickPosition : MonoBehaviour
             {
                 Vector3 clickPosition = hit.point;
                 Debug.Log("Position: " + clickPosition);
+                publisher.sendGoal(clickPosition, Quaternion.identity);
             }
             else
             {

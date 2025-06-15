@@ -13,6 +13,7 @@ using RosMessageTypes.Geometry;
  */
 public class queuingSystem : MonoBehaviour
 {
+
     private enum PathingMode
     {
         PhysicalOnly,
@@ -78,7 +79,7 @@ public class queuingSystem : MonoBehaviour
     private void GoalCallback(PoseStampedMsg msg)
     {
         Pose newGoal = new Pose(msg.pose.position, msg.pose.orientation);
-        if (!newGoal.Equals(lastInserted))
+        if (!newGoal.equals(lastInserted))
         {
             goalQueue.Enqueue(newGoal);
         }

@@ -7,9 +7,8 @@ using RosMessageTypes.Geometry;
  * These are stored in the ROS2 coordinate system.
  * 
  */
-public class Pose
+public struct Pose
 {
-
     public PointMsg position;
     public QuaternionMsg rotation;
 
@@ -18,24 +17,21 @@ public class Pose
         position = pos;
         rotation = rot;
     }
-
-    public bool Equals(Pose other)
+    public bool equals(Pose other)
     {
-        if (position == null || rotation == null)
+        if (other.position == null)
         {
             return false;
         }
 
         if (other.position.x == this.position.x &&
-                other.position.y == this.position.y &&
-                other.position.z == this.position.z &&
-                other.rotation.x == this.rotation.x &&
-                other.rotation.y == this.rotation.y &&
-                other.rotation.z == this.rotation.z &&
-                other.rotation.w == this.rotation.w)
-        {
+            other.position.y == this.position.y &&
+            other.position.z == this.position.z &&
+            other.rotation.x == this.rotation.x &&
+            other.rotation.y == this.rotation.y &&
+            other.rotation.z == this.rotation.z &&
+            other.rotation.w == this.rotation.w)
             return true;
-        }
         return false;
     }
 }
