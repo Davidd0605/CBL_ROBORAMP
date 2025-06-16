@@ -11,6 +11,7 @@ TagManager:
   - logic
   - Robot
   - Searcher
+  - trackpointssystem
   layers:
   - Default
   - TransparentFX
