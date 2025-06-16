@@ -48,7 +48,7 @@ public class queuingSystem : MonoBehaviour
         publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (Input.GetKeyDown(KeyCode.U))
         {
