@@ -1,22 +1,47 @@
 ﻿using UnityEngine;
-using RosMessageTypes.Diagnostic;
-using Unity.Robotics.ROSTCPConnector;
-using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using System.Collections.Generic;
+using RosMessageTypes.Diagnostic;
+using RosMessageTypes.Sensor;
+using Unity.Robotics.ROSTCPConnector;
 
 public class DiagnosticsSubscriber : MonoBehaviour
 {
     public DiagnosticsUI diagnosticsUI;
 
-    ROSConnection ros;
-
-    // Store last known good battery percentage
     private float lastBatteryPercentage = -1f;
+    private float lastDiagnosticsBatteryUpdate = -10f;
+    private float diagnosticsBatteryTimeout = 5f; // seconds
 
     void Start()
     {
-        ros = ROSConnection.GetOrCreateInstance();
+        var ros = ROSConnection.GetOrCreateInstance();
+
         ros.Subscribe<DiagnosticArrayMsg>("/diagnostics", OnDiagnosticsReceived);
+        ros.Subscribe<BatteryStateMsg>("/battery_state", OnBatteryStateReceived);
+    }
+
+    void Update()
+    {
+        // In case diagnostics has stopped sending battery data
+        if (Time.time - lastDiagnosticsBatteryUpdate > diagnosticsBatteryTimeout && lastBatteryPercentage >= 0)
+        {
+            diagnosticsUI.UpdateBatteryStatus(lastBatteryPercentage);
+        }
+    }
+
+    void OnBatteryStateReceived(BatteryStateMsg msg)
+    {
+        if (msg.percentage >= 0 && msg.percentage <= 1.0)
+        {
+            float percentage = msg.percentage * 100f;
+            lastBatteryPercentage = percentage;
+
+            // Only use battery_state if diagnostics hasn't updated recently
+            if (Time.time - lastDiagnosticsBatteryUpdate > diagnosticsBatteryTimeout)
+            {
+                diagnosticsUI.UpdateBatteryStatus(percentage);
+            }
+        }
     }
 
     void OnDiagnosticsReceived(DiagnosticArrayMsg msg)
@@ -45,7 +70,7 @@ public class DiagnosticsSubscriber : MonoBehaviour
                 }
             }
 
-            // Collect Warnings/Errors
+            // Warnings & Errors
             if (status.level == 1 || status.level == 2)
             {
                 string key = $"{status.name}_{status.level}";
@@ -58,15 +83,12 @@ public class DiagnosticsSubscriber : MonoBehaviour
             }
         }
 
-        // Only update battery if we found a valid value
+        // Prefer diagnostics battery value when valid
         if (batteryFound)
         {
             lastBatteryPercentage = batteryPercentage;
+            lastDiagnosticsBatteryUpdate = Time.time;
             diagnosticsUI.UpdateBatteryStatus(batteryPercentage);
-        }
-        else if (lastBatteryPercentage >= 0)
-        {
-            diagnosticsUI.UpdateBatteryStatus(lastBatteryPercentage);
         }
 
         diagnosticsUI.UpdateDiagnostics(diagnosticEntries);
@@ -74,19 +96,7 @@ public class DiagnosticsSubscriber : MonoBehaviour
 
     bool IsBatteryStatus(DiagnosticStatusMsg status)
     {
-        string lowerName = status.name.ToLower();
-        string lowerID = status.hardware_id.ToLower();
-
-        if (lowerName.Contains("battery") || lowerID.Contains("battery") || lowerID.Contains("opencr"))
-            return true;
-
-        foreach (var kv in status.values)
-        {
-            if (kv.key.ToLower().Contains("percentage") || kv.key.ToLower().Contains("battery %"))
-                return true;
-        }
-
-        return false;
+        string name = status.name.ToLower();
+        return name.Contains("battery");
     }
 }
-
