@@ -18,12 +18,7 @@ public class ClickPosition : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 Vector3 clickPosition = hit.point;
-                Debug.Log("Position: " + clickPosition);
                 publisher.sendGoal(clickPosition, Quaternion.identity);
-            }
-            else
-            {
-                Debug.Log("Did not detect anything");
             }
         }
     }

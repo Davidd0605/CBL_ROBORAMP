@@ -60,8 +60,6 @@ public class taskCompletionManager : MonoBehaviour
         {
             distance = Vector3.Distance(Robot.transform.position, goalPosition);
 
-            Debug.Log("Current remaining distance: " + distance);
-
             if (distance < threshold)
             {
                 missionCooldown.startSleeping();

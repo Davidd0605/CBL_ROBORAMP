@@ -33,6 +33,7 @@ public class queuingSystem : MonoBehaviour
 
     private taskCompletionManager taskCompletion;
     private GoalPosePublisher publisher;
+    private GoalFeasibilitySubscriber feasibilitySubscriber;
 
     private bool skippedGoal = false;
 
@@ -46,6 +47,7 @@ public class queuingSystem : MonoBehaviour
 
         taskCompletion = GetComponent<taskCompletionManager>();
         publisher = GameObject.FindGameObjectWithTag("publisher").GetComponent<GoalPosePublisher>();
+        feasibilitySubscriber = GetComponent<GoalFeasibilitySubscriber>();
     }
 
     private void FixedUpdate()
@@ -57,6 +59,7 @@ public class queuingSystem : MonoBehaviour
 
         if ((goalQueue.Count > 0 && taskCompletion.isReady) || skippedGoal)
         {
+            feasibilitySubscriber.resetBuffer();
             skippedGoal = false;
             currentGoal = goalQueue.Dequeue();
 

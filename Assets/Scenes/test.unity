@@ -1108,15 +1108,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2674016689719352557, guid: d3909ae5c5afc024abf4399b60031f9e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.7862816
+      value: -0.516
       objectReference: {fileID: 0}
     - target: {fileID: 2674016689719352557, guid: d3909ae5c5afc024abf4399b60031f9e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.050000954
+      value: 0.207
       objectReference: {fileID: 0}
     - target: {fileID: 2674016689719352557, guid: d3909ae5c5afc024abf4399b60031f9e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -11.763634
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2674016689719352557, guid: d3909ae5c5afc024abf4399b60031f9e, type: 3}
       propertyPath: m_LocalRotation.w
@@ -5347,6 +5347,7 @@ GameObject:
   - component: {fileID: 1797013613}
   - component: {fileID: 1797013614}
   - component: {fileID: 1797013616}
+  - component: {fileID: 1797013617}
   m_Layer: 0
   m_Name: logicmanagers
   m_TagString: logic
@@ -5412,6 +5413,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isSleeping: 0
   sleepingCooldown: 5
+--- !u!114 &1797013617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1797013611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a000a4fb520ae44aaad929dcf650d34, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bufferCap: 0
+  topicName: /goal_feasible
 --- !u!1 &1830581897
 GameObject:
   m_ObjectHideFlags: 0
@@ -5479,10 +5494,7 @@ MonoBehaviour:
   mapTopic: /map
   obstaclePrefab: {fileID: 8659557068479311579, guid: 653ceda4cf3e8a24f944973fcc2f0750, type: 3}
   obstacleHeight: 0.56
-  deg: 270
-  xOffset: 0
-  zOffset: 0
-  currentMode: 0
+  occupancyThreshold: 50
 --- !u!114 &1830581901
 MonoBehaviour:
   m_ObjectHideFlags: 0

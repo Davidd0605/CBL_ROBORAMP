@@ -14,8 +14,6 @@ public class MissionCooldown : MonoBehaviour
 
     public void startSleeping()
     {
-        //TODO IN UI
-        Debug.Log("START COOLDOWN");
         isSleeping = true;
         StartCoroutine(SleepCooldownRoutine());
     }
@@ -23,7 +21,5 @@ public class MissionCooldown : MonoBehaviour
     {
         yield return new WaitForSeconds(sleepingCooldown);
         isSleeping = false;
-        //TODO IN UI
-        Debug.Log("COOLDOWN ENDED");
     }
 }
