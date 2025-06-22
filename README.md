@@ -23,9 +23,9 @@ Make sure you gave the robot the pos estimate before running navigation.
 
 If navigation is not running properly, turn off cartographer. That part of the project can be fuly tested at home (virtual obstacles)
 
-- `ros2 launch turtlebot3_cartographer [cartographer.launch.py](http://cartographer.launch.py/) use_sim_time:=True`
+- `ros2 launch turtlebot3_cartographer cartographer.launch.py use_sim_time:=True`
 - `ros2 run nav2_map_server map_saver_cli -f ~/map`
-- `ros2 launch turtlebot3_navigation2 [navigation2.launch.py](http://navigation2.launch.py/) use_sim_time:=True map:=$HOME/map.yaml`
+- `ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=True map:=$HOME/map.yaml`
 - `ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=`
 
 
