@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PathVisualization : MonoBehaviour
+public class VirtualPathController : MonoBehaviour
 {
 
-    public Madness madnessScript;
+    public PathFinderController pathController;
 
     void Start()
     {
 
-        if (madnessScript == null)
+        if (pathController == null)
         {
             Debug.LogError("PathVisualization: Madness Script is not assigned in the Inspector. Disabling script.");
             enabled = false;
             return;
         }
 
-        if (madnessScript.AgentInstance == null)
+        if (pathController.AgentInstance == null)
         {
             Debug.LogError("PathVisualization: NavMeshAgent in Madness Script is null. Make sure Madness Start() runs first.");
             enabled = false;
@@ -29,12 +29,12 @@ public class PathVisualization : MonoBehaviour
     void Update()
     {
 
-        if (madnessScript == null || madnessScript.AgentInstance == null)
+        if (pathController == null || pathController.AgentInstance == null)
         {
             return;
         }
 
-        NavMeshAgent agentToVisualize = madnessScript.AgentInstance;
+        NavMeshAgent agentToVisualize = pathController.AgentInstance;
 
         if (agentToVisualize.hasPath)
         {

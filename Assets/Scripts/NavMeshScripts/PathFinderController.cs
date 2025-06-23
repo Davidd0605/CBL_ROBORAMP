@@ -8,7 +8,7 @@ using UnityEngine;
 * This is the 5th solution I come up with for this today.
 * My mental state has been degrading at a rapid pace.
 */
-public class Madness : MonoBehaviour
+public class PathFinderController : MonoBehaviour
 {
     private NavMeshAgent agent;
     private ROSConnection ros;

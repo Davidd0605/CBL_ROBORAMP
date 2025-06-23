@@ -73,7 +73,7 @@ public class queuingSystem : MonoBehaviour
                     break;
                 case PathingMode.VirtualPathing:
                     //TODO: Improve virtual pathing tuesday
-                    GameObject.FindGameObjectWithTag("Searcher").GetComponent<Madness>().SetTarget(unityGoal);
+                    GameObject.FindGameObjectWithTag("Searcher").GetComponent<PathFinderController>().SetTarget(unityGoal);
                     break;
             }
         }
