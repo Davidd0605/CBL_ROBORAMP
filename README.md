@@ -1,5 +1,6 @@
 # CBL_ROS2_ROBORAMP
-
+## Overview
+- Digital twin system application using unity. The unity application connects via ROS2 to a physical turtlebot. The unity side receives readings from the robots sensors and handles avoiding virtual obstacles, queuing goals and receiving requests. Position of the virtual robot is synchronized with the real one.
 ## Instructions on how to run the project:
 
 Make sure required packages have been installed (API connection package, Goal Feasibility package, Battery status mock package, although these are not mandatory for the project to run and be tested).
